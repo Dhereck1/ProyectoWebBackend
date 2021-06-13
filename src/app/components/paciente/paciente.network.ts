@@ -6,6 +6,7 @@ import server from "../../server"
 const bodyParser = require('body-parser');
 const routerPaciente= express();
 routerPaciente.use(express.json());
+routerPaciente.use(bodyParser.urlencoded({ extended : false }));
 
 
 routerPaciente.post('/registro' ,(req:any,res:any)=>{
@@ -43,6 +44,23 @@ routerPaciente.get('/:id/historia', (req: Request, res:Response) => {//obtener h
     connection.query("SELECT historiaClinica FROM usuario WHERE idUsuario=?",id,(req1:any, historia:any)=>{
         res.send(historia);  
     });
+});
+
+routerPaciente.post('/login', (req: Request, res:Response ) => {
+    
+    let connection = server.conexionBD();
+    const rut=req.body.rut;
+    const password=req.body.password;
+    console.log("hola");
+    connection.query("SELECT * FROM usuario WHERE rut=? AND contrasena=?",[rut,password], (error:any,resultados:any) => {
+        
+        if(error){
+            throw(error);
+        }else{
+            res.send(resultados);
+        }
+    });
+    
 });
 
 
