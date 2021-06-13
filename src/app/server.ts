@@ -1,5 +1,6 @@
 import express,{Express} from "express";
 import cita from "./components/cita";
+import paciente from "./components/paciente";
 
 const cors = require('cors');
 const mysql      = require('mysql');
@@ -30,7 +31,7 @@ function main(){
     server.use(cors());
     const port:number=3500;
 
-    server.use("/api" , cita);
+    server.use("/api" , cita , paciente);
     server.listen(port,() =>{
         console.log(`Server corriendo en: http://localhost:${port}`);
     })
