@@ -5,20 +5,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const server_1 = __importDefault(require("../../server"));
-const routerPaciente = express_1.default.Router();
+const bodyParser = require('body-parser');
+const routerPaciente = express_1.default();
+routerPaciente.use(express_1.default.json());
 routerPaciente.post('/registro', (req, res) => {
     let connection = server_1.default.conexionBD();
-    let nombre = req.body.nombre;
-    let apellido = req.body.apellido;
-    let rut = req.body.rut;
-    let region = req.body.region;
-    let direccion = req.body.direccion;
-    let comuna = req.body.comuna;
-    let correo = req.body.correo;
-    let contrasena = req.body.contrasena;
-    let rol = req.body.rol;
-    connection.query("INSERT INTO usuario (rut,contrasena,rol,direccion,region,comuna,correo,nombre,apellido)VALUES(?,?,?,?,?,?,?,?,?))", [rut, contrasena, rol, direccion, region, comuna, correo, nombre, apellido], (req1, cita) => {
+    let nuevo = {
+        idUsuario: null,
+        rut: req.body.rut,
+        contrasena: req.body.contrasena,
+        historiaClinica: null,
+        rol: req.body.rol,
+        direccion: req.body.direccion,
+        region: req.body.region,
+        comuna: req.body.comuna,
+        correo: req.body.correo,
+        nombre: req.body.nombre,
+        apellido: req.body.apellido,
+    };
+    console.log(nuevo);
+    connection.query("INSERT INTO `usuario` SET ?", nuevo, (req1, cita) => {
         res.status(201).send('usuario creado');
+    });
+});
+routerPaciente.get('/:id', (req, res) => {
+    const id = req.params['id'];
+    let connection = server_1.default.conexionBD();
+    connection.query("SELECT * FROM usuario WHERE idUsuario=?", id, (req1, paciente) => {
+        res.send(paciente);
+    });
+});
+routerPaciente.get('/:id/historia', (req, res) => {
+    const id = req.params['id'];
+    let connection = server_1.default.conexionBD();
+    connection.query("SELECT historiaClinica FROM usuario WHERE idUsuario=?", id, (req1, historia) => {
+        res.send(historia);
     });
 });
 exports.default = routerPaciente;

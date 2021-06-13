@@ -18,7 +18,6 @@ routerCita.get('/all', (req: Request, res:Response) => {
 
 routerCita.get('/:id', (req: Request, res:Response) => {
     const id: string = req.params['id'];
-
     let connection = server.conexionBD();
     connection.query("SELECT * FROM cita WHERE idUsuario=?", id, (req1:any, cita:any)=>{
         res.send(cita);
