@@ -49,6 +49,16 @@ routerCita.get('/especialidad/:especialidad', (req: Request, res:Response) => {
     });
 });
 
+
+routerCita.get('/medico/:idCita', (req: Request, res:Response) => {
+    const id: string = req.params['idCita'];
+
+    let connection = server.conexionBD();
+    connection.query("SELECT m.nombre, m.apellido FROM medico m JOIN cita c ON m.idMedico=c.idMedico WHERE c.idCita=?", id, (req1:any, nombresMed:any)=>{
+        res.send(nombresMed);
+    });
+});
+
 routerCita.post('/añadirCita', (req:Request,res:Response)=>{
 
     let connection = server.conexionBD();

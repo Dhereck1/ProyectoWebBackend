@@ -40,6 +40,13 @@ routerCita.get('/especialidad/:especialidad', (req, res) => {
         res.send(cita);
     });
 });
+routerCita.get('/medico/:idCita', (req, res) => {
+    const id = req.params['idCita'];
+    let connection = server_1.default.conexionBD();
+    connection.query("SELECT m.nombre, m.apellido FROM medico m JOIN cita c ON m.idMedico=c.idMedico WHERE c.idCita=?", id, (req1, nombresMed) => {
+        res.send(nombresMed);
+    });
+});
 routerCita.post('/añadirCita', (req, res) => {
     let connection = server_1.default.conexionBD();
     let idUsuario = req.body.idUsuario;
