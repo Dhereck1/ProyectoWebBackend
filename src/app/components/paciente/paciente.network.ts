@@ -30,6 +30,16 @@ routerPaciente.post('/registro' ,(req:any,res:any)=>{
     });
 });
 
+routerPaciente.get('/all', (req: Request, res:Response) => {
+
+    let connection = server.conexionBD();
+    connection.query("SELECT * FROM usuario WHERE rol=2", (req1:any, todasLasCitas:any)=>{
+        
+        res.send(todasLasCitas);
+    });
+    
+});
+
 routerPaciente.get('/:id', (req: Request, res:Response) => {//obtener un usuario por id
     const id: string = req.params['id'];
     let connection = server.conexionBD();

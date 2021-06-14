@@ -29,6 +29,12 @@ routerPaciente.post('/registro', (req, res) => {
         res.status(201).send('usuario creado');
     });
 });
+routerPaciente.get('/all', (req, res) => {
+    let connection = server_1.default.conexionBD();
+    connection.query("SELECT * FROM usuario WHERE rol=2", (req1, todasLasCitas) => {
+        res.send(todasLasCitas);
+    });
+});
 routerPaciente.get('/:id', (req, res) => {
     const id = req.params['id'];
     let connection = server_1.default.conexionBD();
