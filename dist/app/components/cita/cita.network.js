@@ -5,7 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const server_1 = __importDefault(require("../../server"));
-const routerCita = express_1.default.Router();
+const routerCita = express_1.default();
+routerCita.use(express_1.default.json());
 routerCita.get('/all', (req, res) => {
     let connection = server_1.default.conexionBD();
     connection.query("SELECT * FROM cita", (req1, todasLasCitas) => {
@@ -60,6 +61,14 @@ routerCita.put('/editarCita', (req, res) => {
     let hora = req.body.hora;
     connection.query("UPDATE cita SET estado=? fecha=? hora=? WHERE idCita=?", [estado, fecha, hora, idCita], (req1, cita) => {
         res.status(200).send('cita actualizada');
+    });
+});
+routerCita.put('/cancelarCita', (req, res) => {
+    let connection = server_1.default.conexionBD();
+    let idCita = req.body.idCita;
+    let estado = req.body.estado;
+    connection.query("UPDATE cita SET estado=? WHERE idCita=?", [estado, idCita], (req1, cita) => {
+        res.status(200).send('cita cancelada');
     });
 });
 exports.default = routerCita;
