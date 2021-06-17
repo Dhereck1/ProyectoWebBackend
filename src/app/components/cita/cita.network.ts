@@ -6,9 +6,14 @@ const bodyParser = require('body-parser');
 const routerCita: Router = express.Router();
 
 
-//routerCita.use(cors);
-routerCita.use(bodyParser.json());
-routerCita.use(bodyParser.urlencoded({ extended : false }));
+
+
+routerCita.use(bodyParser.json()); //agregó jo
+routerCita.use(bodyParser.urlencoded({ extended : false })); //agrego jo ver si es que despues tiene conflicto con express.json
+
+const routerCita= express();
+routerCita.use(express.json());
+
 
 routerCita.get('/all', (req: Request, res:Response) => {
 
@@ -114,6 +119,15 @@ routerCita.put('/editarCita',(req:Request,res:Response)=>{
     let hora=req.body.hora;
     connection.query("UPDATE cita SET estado=? fecha=? hora=? WHERE idCita=?",[estado,fecha,hora,idCita],(req1:any, cita:any)=>{
         res.status(200).send('cita actualizada');
+    });
+});
+
+routerCita.put('/cancelarCita',(req:Request,res:Response)=>{
+    let connection = server.conexionBD();
+    let idCita=req.body.idCita;
+    let estado=req.body.estado;
+    connection.query("UPDATE cita SET estado=? WHERE idCita=?",[estado,idCita],(req1:any, cita:any)=>{
+        res.status(200).send('cita cancelada');
     });
 });
 
