@@ -1,10 +1,19 @@
 import express, { Request, Response , Router} from "express";
 import server from "../../server"
 
+//const cors = require('cors');
+const bodyParser = require('body-parser');
+const routerCita: Router = express.Router();
 
+
+
+
+routerCita.use(bodyParser.json()); //agregó jo
+routerCita.use(bodyParser.urlencoded({ extended : false })); //agrego jo ver si es que despues tiene conflicto con express.json
 
 const routerCita= express();
 routerCita.use(express.json());
+
 
 routerCita.get('/all', (req: Request, res:Response) => {
 
@@ -12,6 +21,17 @@ routerCita.get('/all', (req: Request, res:Response) => {
     connection.query("SELECT * FROM cita", (req1:any, todasLasCitas:any)=>{
         
         res.send(todasLasCitas);
+    });
+    
+});
+
+routerCita.get('/admin/allMedicos', (req: Request, res:Response) => {
+
+    let connection = server.conexionBD();
+    connection.query("SELECT * FROM medico", (req1:any, todosLosMedicos:any)=>{
+        
+        res.send(todosLosMedicos);
+        console.log(todosLosMedicos);
     });
     
 });
@@ -24,6 +44,28 @@ routerCita.get('/:id', (req: Request, res:Response) => {
         res.send(cita);
     });
 });
+
+
+routerCita.get('/medico/cita/:id', (req: Request, res:Response) => {
+    const id: string = req.params['id'];
+
+    let connection = server.conexionBD();
+    connection.query("SELECT m.nombre, m.apellido FROM medico m WHERE m.idMedico=?", id, (req1:any, [nombresMed]:any[])=>{
+        res.send(nombresMed);
+    });
+    
+});
+
+routerCita.get('/paciente/:id', (req: Request, res:Response) => {
+    const id: string = req.params['id'];
+
+    let connection = server.conexionBD();
+    connection.query(`SELECT u.nombre, u.apellido FROM usuario u WHERE u.idUsuario=${id}`, (req1:any, [nombresP]:any[])=>{
+        res.send(nombresP);
+    });
+    
+});
+
 
 routerCita.get('/medico/:id', (req: Request, res:Response) => {
     const id: string = req.params['id'];
@@ -45,32 +87,27 @@ routerCita.get('/especialidad/:especialidad', (req: Request, res:Response) => {
     const id: string = req.params['especialidad'];
 
     let connection = server.conexionBD();
-    connection.query("SELECT c.* FROM cita c JOIN medico m ON c.idMedico=m.idMedico JOIN especialidades e ON m.especialidad=e.idEspecialidad WHERE e.idEspecialidad=?", id, (req1:any, cita:any)=>{
+    connection.query(`SELECT u.nombreEspecialidad FROM especialidades u WHERE u.idEspecialidad=${id}`, id, (req1:any, [cita]:any[])=>{
         res.send(cita);
+        console.log(cita);
     });
 });
 
 
-routerCita.get('/medico/:idCita', (req: Request, res:Response) => {
-    const id: string = req.params['idCita'];
 
+routerCita.post('/anadirCita', (req:any,res:any)=>{
     let connection = server.conexionBD();
-    connection.query("SELECT m.nombre, m.apellido FROM medico m JOIN cita c ON m.idMedico=c.idMedico WHERE c.idCita=?", id, (req1:any, nombresMed:any)=>{
-        res.send(nombresMed);
-    });
-});
 
-routerCita.post('/añadirCita', (req:Request,res:Response)=>{
-
-    let connection = server.conexionBD();
-    let idUsuario=req.body.idUsuario;
-    let idMedico=req.body.idMedico;
-    let fecha=req.body.fecha;
-    let hora=req.body.hora;
-    let descripcion=req.body.descripcion;
-    let estado=req.body.estado;
-    connection.query("INSERT INTO cita(idUsuario,idMedico,fecha,hora,descripcion,estado)VALUES(?,?,?,?,?,?))",[idUsuario,idMedico,fecha,hora,descripcion,estado],(req1:any, cita:any)=>{
-        res.status(201).send('cita creada')
+    let nuevo={
+        idUsuario: req.body.idUsuario,
+        idMedico: req.body.idMedico,
+        fecha: null,
+        hora: null,
+        descripcion: req.body.descripcion,
+        estado:req.body.estado,
+    }
+    connection.query("INSERT INTO `cita` SET ?", nuevo,(req1:any, cita:any)=>{
+        res.status(201).send(JSON.stringify('cita creada')); 
     });
 });
 
