@@ -26,7 +26,7 @@ routerPaciente.post('/registro', (req, res) => {
     };
     console.log(nuevo);
     connection.query("INSERT INTO `usuario` SET ?", nuevo, (req1, cita) => {
-        res.status(201).send('usuario creado');
+        res.status(201).send(JSON.stringify('usuario creado'));
     });
 });
 routerPaciente.get('/:id', (req, res) => {
