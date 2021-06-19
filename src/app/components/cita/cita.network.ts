@@ -3,15 +3,14 @@ import server from "../../server"
 
 //const cors = require('cors');
 const bodyParser = require('body-parser');
-const routerCita: Router = express.Router();
+//const routerCita: Router = express.Router();
 
-
+const routerCita= express();
 
 
 routerCita.use(bodyParser.json()); //agregó jo
 routerCita.use(bodyParser.urlencoded({ extended : false })); //agrego jo ver si es que despues tiene conflicto con express.json
 
-const routerCita= express();
 routerCita.use(express.json());
 
 
@@ -24,6 +23,8 @@ routerCita.get('/all', (req: Request, res:Response) => {
     });
     
 });
+
+
 
 routerCita.get('/admin/allMedicos', (req: Request, res:Response) => {
 
@@ -41,6 +42,14 @@ routerCita.get('/:id', (req: Request, res:Response) => {
     const id: string = req.params['id'];
     let connection = server.conexionBD();
     connection.query("SELECT * FROM cita WHERE idUsuario=?", id, (req1:any, cita:any)=>{
+        res.send(cita);
+    });
+});
+
+routerCita.get('/citaById/:id', (req: Request, res:Response) => {
+    const id: string = req.params['id'];
+    let connection = server.conexionBD();
+    connection.query("SELECT * FROM cita WHERE idCita=?", id, (req1:any, cita:any)=>{
         res.send(cita);
     });
 });
@@ -114,10 +123,12 @@ routerCita.post('/anadirCita', (req:any,res:any)=>{
 routerCita.put('/editarCita',(req:Request,res:Response)=>{
     let connection = server.conexionBD();
     let idCita=req.body.idCita;
+    let idMedico=req.body.idMedico;
     let estado=req.body.estado;
     let fecha=req.body.fecha;
     let hora=req.body.hora;
-    connection.query("UPDATE cita SET estado=? fecha=? hora=? WHERE idCita=?",[estado,fecha,hora,idCita],(req1:any, cita:any)=>{
+    console.log(req.body)
+    connection.query("UPDATE cita SET estado=? , fecha=? , hora=? , idMedico=? WHERE idCita=?",[estado,fecha,hora,idMedico,idCita],(req1:any, cita:any)=>{
         res.status(200).send('cita actualizada');
     });
 });
