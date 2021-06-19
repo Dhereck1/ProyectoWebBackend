@@ -1,12 +1,41 @@
-import express, { Request, Response , Router} from "express";
-import paciente from ".";
-import server from "../../server"
+import server from "../../server";
 
 
-const bodyParser = require('body-parser');
+const express= require('express');
 const routerPaciente= express();
+const bodyParser = require('body-parser');
+
 routerPaciente.use(express.json());
 routerPaciente.use(bodyParser.urlencoded({ extended : false }));
+
+const jwt = require('jsonwebtoken');
+const token = require('../../configs/config');
+const rutaSegura= express.Router();
+
+
+rutaSegura.use((req:any, res:any, next:any)=>{
+    const tokens=req.headers["access-token"];
+    console.log(tokens);
+    jwt.verify(tokens, token.token , (err:any , decoded:any)=>{
+        if(err){
+            return res.json("Token inválido");
+        }else{
+            req.decoded=decoded;
+            req.authenticated=true;
+            next();
+        }
+    });
+    
+});
+
+routerPaciente.get('/token',(req:any,res:any)=>{
+    jwt.sign(
+        {exp: Math.floor(Date.now() / 1000) + (60 * 60),
+        data: 'bar'}, token.token,function(error:any,token:any){
+        console.log(token);
+        res.json(token);
+    });
+});
 
 
 routerPaciente.post('/registro' ,(req:any,res:any)=>{
@@ -30,7 +59,7 @@ routerPaciente.post('/registro' ,(req:any,res:any)=>{
     });
 });
 
-routerPaciente.get('/all', (req: Request, res:Response) => {
+routerPaciente.get('/all', (req: any, res:any) => {
 
     let connection = server.conexionBD();
     connection.query("SELECT * FROM usuario WHERE rol=2", (req1:any, todasLasCitas:any)=>{
@@ -40,7 +69,7 @@ routerPaciente.get('/all', (req: Request, res:Response) => {
     
 });
 
-routerPaciente.get('/:id', (req: Request, res:Response) => {//obtener un usuario por id
+routerPaciente.get('/:id', (req: any, res:any) => {//obtener un usuario por id
     const id: string = req.params['id'];
     let connection = server.conexionBD();
     connection.query("SELECT * FROM usuario WHERE idUsuario=?",id,(req1:any, paciente:any)=>{
@@ -48,7 +77,7 @@ routerPaciente.get('/:id', (req: Request, res:Response) => {//obtener un usuario
     });
 });
 
-routerPaciente.get('/:id/historia', (req: Request, res:Response) => {//obtener historia clinica por id
+routerPaciente.get('/:id/historia', (req: any, res:any) => {//obtener historia clinica por id
     const id: string = req.params['id'];
     let connection = server.conexionBD();
     connection.query("SELECT historiaClinica FROM usuario WHERE idUsuario=?",id,(req1:any, historia:any)=>{
@@ -56,13 +85,15 @@ routerPaciente.get('/:id/historia', (req: Request, res:Response) => {//obtener h
     });
 });
 
-routerPaciente.post('/login', (req: Request, res:Response ) => {
+routerPaciente.post('/login', rutaSegura, (req: any, res:any ) => {
     
     let connection = server.conexionBD();
     const rut=req.body.rut;
     const password=req.body.password;
     console.log("hola");
-    connection.query("SELECT * FROM usuario WHERE rut=? AND contrasena=?",[rut,password], (error:any,resultados:any) => {
+    console.log(rut);
+    console.log(password);
+    connection.query("SELECT * FROM usuario WHERE rut=? AND contrasena=md5(?)",[rut,password], (error:any,resultados:any) => {
         
         if(error){
             throw(error);
@@ -73,7 +104,23 @@ routerPaciente.post('/login', (req: Request, res:Response ) => {
     
 });
 
-
-
+routerPaciente.get('/login', (req: any, res:any ) => {
+    console.log("hola");
+    let connection = server.conexionBD();
+    const rut=req.query.rut;
+    const password=req.query.password;
+    
+    console.log(rut);
+    console.log(password);
+    connection.query("SELECT * FROM usuario WHERE rut=? AND contrasena=?",[rut,password], (error:any,resultados:any) => {
+        
+        if(error){
+            throw(error);
+        }else{
+            res.send(resultados);
+        }
+    });
+    
+});
 
 export default routerPaciente;
