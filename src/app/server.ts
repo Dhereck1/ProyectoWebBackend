@@ -1,16 +1,19 @@
-import express,{Express} from "express";
 import cita from "./components/cita";
 import paciente from "./components/paciente";
 
+
+const express= require('express');
 const cors = require('cors');
-const mysql      = require('mysql');
+const server= express();
+server.use(cors());
+const mysql= require('mysql');
 let connection = mysql.createConnection({
-  host     : 'localhost',
-  port     : '3306',
-  user     : 'root',
-  password : '',
-  database : 'proyectobd'
-});
+    host     : 'localhost',
+    port     : '3306',
+    user     : 'proyectoWeb',
+    password : 'sxDZQo7tf5xCkzeq',
+    database : 'proyectobd'
+  });
 
  
 connection.connect( function(error:any){
@@ -27,8 +30,8 @@ function conexionBD(){
 
 function main(){
 
-    const server:Express= express();
-    server.use(cors());
+    
+    
     const port:number=3500;
 
     server.use("/api" , cita , paciente);

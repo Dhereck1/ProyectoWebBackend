@@ -3,12 +3,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
 const server_1 = __importDefault(require("../../server"));
+const express = require('express');
+const routerPaciente = express();
 const bodyParser = require('body-parser');
-const routerPaciente = express_1.default();
-routerPaciente.use(express_1.default.json());
+routerPaciente.use(express.json());
 routerPaciente.use(bodyParser.urlencoded({ extended: false }));
+const jwt = require('jsonwebtoken');
+const token = require('../../configs/config');
+const rutaSegura = express.Router();
+rutaSegura.use((req, res, next) => {
+    const tokens = req.headers["access-token"];
+    console.log(tokens);
+    jwt.verify(tokens, token.token, (err, decoded) => {
+        if (err) {
+            return res.json("Token inválido");
+        }
+        else {
+            req.decoded = decoded;
+            req.authenticated = true;
+            next();
+        }
+    });
+});
+routerPaciente.get('/token', (req, res) => {
+    jwt.sign({ exp: Math.floor(Date.now() / 1000) + (60 * 60),
+        data: 'bar' }, token.token, function (error, token) {
+        console.log(token);
+        res.json(token);
+    });
+});
 routerPaciente.post('/registro', (req, res) => {
     let connection = server_1.default.conexionBD();
     let nuevo = {
@@ -49,11 +73,29 @@ routerPaciente.get('/:id/historia', (req, res) => {
         res.send(historia);
     });
 });
-routerPaciente.post('/login', (req, res) => {
+routerPaciente.post('/login', rutaSegura, (req, res) => {
     let connection = server_1.default.conexionBD();
     const rut = req.body.rut;
     const password = req.body.password;
     console.log("hola");
+    console.log(rut);
+    console.log(password);
+    connection.query("SELECT * FROM usuario WHERE rut=? AND contrasena=md5(?)", [rut, password], (error, resultados) => {
+        if (error) {
+            throw (error);
+        }
+        else {
+            res.send(resultados);
+        }
+    });
+});
+routerPaciente.get('/login', (req, res) => {
+    console.log("hola");
+    let connection = server_1.default.conexionBD();
+    const rut = req.query.rut;
+    const password = req.query.password;
+    console.log(rut);
+    console.log(password);
     connection.query("SELECT * FROM usuario WHERE rut=? AND contrasena=?", [rut, password], (error, resultados) => {
         if (error) {
             throw (error);
