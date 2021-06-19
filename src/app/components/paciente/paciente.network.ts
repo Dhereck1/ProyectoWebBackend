@@ -53,8 +53,9 @@ routerPaciente.post('/registro' ,(req:any,res:any)=>{
         nombre:req.body.nombre,
         apellido:req.body.apellido,
     }
-    console.log(nuevo)
-    connection.query("INSERT INTO `usuario` SET ?",nuevo,(req1:any, cita:any)=>{
+    console.log(nuevo);
+    connection.query("INSERT INTO `usuario` SET rut=?, contrasena=md5(?), nombre=?, apellido=?, rol=2, direccion=?, region=?, comuna=?, correo=?"
+        ,[nuevo.rut,nuevo.contrasena,nuevo.nombre,nuevo.apellido,nuevo.direccion,nuevo.region,nuevo.comuna,nuevo.correo],(req1:any, cita:any)=>{
         res.status(201).send(JSON.stringify('usuario creado'))
     });
 });
@@ -94,25 +95,6 @@ routerPaciente.post('/login', rutaSegura, (req: any, res:any ) => {
     console.log(rut);
     console.log(password);
     connection.query("SELECT * FROM usuario WHERE rut=? AND contrasena=md5(?)",[rut,password], (error:any,resultados:any) => {
-        
-        if(error){
-            throw(error);
-        }else{
-            res.send(resultados);
-        }
-    });
-    
-});
-
-routerPaciente.get('/login', (req: any, res:any ) => {
-    console.log("hola");
-    let connection = server.conexionBD();
-    const rut=req.query.rut;
-    const password=req.query.password;
-    
-    console.log(rut);
-    console.log(password);
-    connection.query("SELECT * FROM usuario WHERE rut=? AND contrasena=?",[rut,password], (error:any,resultados:any) => {
         
         if(error){
             throw(error);
