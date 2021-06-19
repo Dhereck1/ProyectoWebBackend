@@ -48,4 +48,18 @@ routerPaciente.get('/:id/historia', (req, res) => {
         res.send(historia);
     });
 });
+routerPaciente.put('/actHist', (req, res) => {
+    let connection = server_1.default.conexionBD();
+    let historia = req.body.historiaClinica;
+    let id = req.body.idUsuario;
+    console.log(req.body);
+    connection.query("UPDATE usuario SET historiaClinica=? WHERE idUsuario=?", [historia, id], (error, resultados) => {
+        if (error) {
+            throw (error);
+        }
+        else {
+            res.send(resultados);
+        }
+    });
+});
 exports.default = routerPaciente;
