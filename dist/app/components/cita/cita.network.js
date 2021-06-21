@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const routerCita = express_1.default();
 routerCita.use(cors());
 routerCita.use(bodyParser.json()); //agregó jo
-routerCita.use(bodyParser.urlencoded({ extended: false })); //agrego jo ver si es que despues tiene conflicto con express.json
+//routerCita.use(bodyParser.urlencoded({ extended : false })); //agrego jo ver si es que despues tiene conflicto con express.json
 routerCita.use(express_1.default.json());
 routerCita.get('/all', (req, res) => {
     let connection = server_1.default.conexionBD();
@@ -99,7 +99,7 @@ routerCita.put('/editarCita', (req, res) => {
     let hora = req.body.hora;
     console.log(req.body);
     connection.query("UPDATE cita SET estado=? , fecha=? , hora=? , idMedico=? WHERE idCita=?", [estado, fecha, hora, idMedico, idCita], (req1, cita) => {
-        res.status(200).send('cita actualizada');
+        res.status(200).send(JSON.stringify('cita actualizaa'));
     });
 });
 routerCita.put('/cancelarCita', (req, res) => {
@@ -107,7 +107,7 @@ routerCita.put('/cancelarCita', (req, res) => {
     let idCita = req.body.idCita;
     let estado = req.body.estado;
     connection.query("UPDATE cita SET estado=? WHERE idCita=?", [estado, idCita], (req1, cita) => {
-        res.status(200).send('cita cancelada');
+        res.status(200).send(JSON.stringify('cita cancelada'));
     });
 });
 exports.default = routerCita;

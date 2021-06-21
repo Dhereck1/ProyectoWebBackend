@@ -9,7 +9,7 @@ const routerCita= express();
 routerCita.use(cors());
 
 routerCita.use(bodyParser.json()); //agregó jo
-routerCita.use(bodyParser.urlencoded({ extended : false })); //agrego jo ver si es que despues tiene conflicto con express.json
+//routerCita.use(bodyParser.urlencoded({ extended : false })); //agrego jo ver si es que despues tiene conflicto con express.json
 
 routerCita.use(express.json());
 
@@ -129,7 +129,7 @@ routerCita.put('/editarCita',(req:Request,res:Response)=>{
     let hora=req.body.hora;
     console.log(req.body)
     connection.query("UPDATE cita SET estado=? , fecha=? , hora=? , idMedico=? WHERE idCita=?",[estado,fecha,hora,idMedico,idCita],(req1:any, cita:any)=>{
-        res.status(200).send('cita actualizada');
+        res.status(200).send(JSON.stringify('cita actualizaa'));
     });
 });
 
@@ -138,7 +138,7 @@ routerCita.put('/cancelarCita',(req:Request,res:Response)=>{
     let idCita=req.body.idCita;
     let estado=req.body.estado;
     connection.query("UPDATE cita SET estado=? WHERE idCita=?",[estado,idCita],(req1:any, cita:any)=>{
-        res.status(200).send('cita cancelada');
+        res.status(200).send(JSON.stringify('cita cancelada'));
     });
 });
 
