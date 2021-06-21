@@ -1,12 +1,12 @@
 import express, { Request, Response , Router} from "express";
 import server from "../../server"
 
-//const cors = require('cors');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 //const routerCita: Router = express.Router();
 
 const routerCita= express();
-
+routerCita.use(cors());
 
 routerCita.use(bodyParser.json()); //agregó jo
 routerCita.use(bodyParser.urlencoded({ extended : false })); //agrego jo ver si es que despues tiene conflicto con express.json
