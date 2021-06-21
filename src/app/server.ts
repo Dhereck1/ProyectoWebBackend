@@ -5,7 +5,9 @@ import paciente from "./components/paciente";
 const express= require('express');
 const cors = require('cors');
 const server= express();
-server.use(cors());
+
+
+
 const mysql= require('mysql');
 let connection = mysql.createConnection({
     host     : 'localhost',
@@ -31,7 +33,7 @@ function conexionBD(){
 function main(){
 
     
-    
+    server.use(cors());
     const port:number=3500;
 
     server.use("/api" , cita , paciente);

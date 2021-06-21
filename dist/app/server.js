@@ -8,7 +8,6 @@ const paciente_1 = __importDefault(require("./components/paciente"));
 const express = require('express');
 const cors = require('cors');
 const server = express();
-server.use(cors());
 const mysql = require('mysql');
 let connection = mysql.createConnection({
     host: 'localhost',
@@ -28,6 +27,7 @@ function conexionBD() {
     return connection;
 }
 function main() {
+    server.use(cors());
     const port = 3500;
     server.use("/api", cita_1.default, paciente_1.default);
     server.listen(port, () => {

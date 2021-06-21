@@ -4,9 +4,11 @@ import server from "../../server";
 const express= require('express');
 const routerPaciente= express();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 routerPaciente.use(express.json());
 routerPaciente.use(bodyParser.urlencoded({ extended : false }));
+routerPaciente.use(cors());
 
 const jwt = require('jsonwebtoken');
 const token = require('../../configs/config');

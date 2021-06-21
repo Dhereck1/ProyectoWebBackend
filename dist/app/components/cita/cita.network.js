@@ -5,10 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const server_1 = __importDefault(require("../../server"));
-//const cors = require('cors');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 //const routerCita: Router = express.Router();
 const routerCita = express_1.default();
+routerCita.use(cors());
 routerCita.use(bodyParser.json()); //agregó jo
 routerCita.use(bodyParser.urlencoded({ extended: false })); //agrego jo ver si es que despues tiene conflicto con express.json
 routerCita.use(express_1.default.json());
