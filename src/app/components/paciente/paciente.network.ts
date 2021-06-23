@@ -1,3 +1,4 @@
+import { json } from "body-parser";
 import server from "../../server";
 
 
@@ -42,6 +43,7 @@ routerPaciente.get('/token',(req:any,res:any)=>{
 
 routerPaciente.post('/registro' ,(req:any,res:any)=>{
     let connection = server.conexionBD();
+
     let nuevo={
         idUsuario:null,
         rut:req.body.rut,
@@ -55,11 +57,29 @@ routerPaciente.post('/registro' ,(req:any,res:any)=>{
         nombre:req.body.nombre,
         apellido:req.body.apellido,
     }
-    console.log(nuevo);
-    connection.query("INSERT INTO `usuario` SET rut=?, contrasena=md5(?), nombre=?, apellido=?, rol=2, direccion=?, region=?, comuna=?, correo=?"
-        ,[nuevo.rut,nuevo.contrasena,nuevo.nombre,nuevo.apellido,nuevo.direccion,nuevo.region,nuevo.comuna,nuevo.correo],(req1:any, cita:any)=>{
-        res.status(201).send(JSON.stringify('usuario creado'))
-    });
+
+    connection.query("SELECT * FROM usuario WHERE correo=?", [nuevo.correo], function(err:any, result:any){
+        
+        if(result.length > 0){
+           // res.redirect('/');
+           res.send(JSON.stringify('email ocupado'));        
+        }else{
+            connection.query("SELECT * FROM usuario WHERE rut=?", [nuevo.rut], function(err2:any, result2:any){
+                if(result2.length > 0){
+                    res.send(JSON.stringify('rut ocupado'));
+                    console.log("OK")
+                    
+                }else{
+                    connection.query("INSERT INTO `usuario` SET rut=?, contrasena=md5(?), nombre=?, apellido=?, rol=2, direccion=?, region=?, comuna=?, correo=?"
+                    ,[nuevo.rut,nuevo.contrasena,nuevo.nombre,nuevo.apellido,nuevo.direccion,nuevo.region,nuevo.comuna,nuevo.correo],(req1:any, cita:any)=>{
+                    res.status(201).send(JSON.stringify('usuario creado'))
+                    });
+                }
+            })       
+        }
+    })
+
+    
 });
 
 routerPaciente.get('/all', (req: any, res:any) => {
@@ -96,8 +116,7 @@ routerPaciente.post('/login', rutaSegura, (req: any, res:any ) => {
     console.log("hola");
     console.log(rut);
     console.log(password);
-    connection.query("SELECT * FROM usuario WHERE rut=? AND contrasena=md5(?)",[rut,password], (error:any,resultados:any) => {
-        
+    connection.query("SELECT * FROM usuario WHERE rut=? AND contrasena=md5(?)",[rut,password], (error:any,resultados:any) => {   
         if(error){
             throw(error);
         }else{
