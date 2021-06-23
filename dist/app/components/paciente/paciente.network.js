@@ -50,9 +50,24 @@ routerPaciente.post('/registro', (req, res) => {
         nombre: req.body.nombre,
         apellido: req.body.apellido,
     };
-    console.log(nuevo);
-    connection.query("INSERT INTO `usuario` SET rut=?, contrasena=md5(?), nombre=?, apellido=?, rol=2, direccion=?, region=?, comuna=?, correo=?", [nuevo.rut, nuevo.contrasena, nuevo.nombre, nuevo.apellido, nuevo.direccion, nuevo.region, nuevo.comuna, nuevo.correo], (req1, cita) => {
-        res.status(201).send(JSON.stringify('usuario creado'));
+    connection.query("SELECT * FROM usuario WHERE correo=?", [nuevo.correo], function (err, result) {
+        if (result.length > 0) {
+            // res.redirect('/');
+            res.send(JSON.stringify('email ocupado'));
+        }
+        else {
+            connection.query("SELECT * FROM usuario WHERE rut=?", [nuevo.rut], function (err2, result2) {
+                if (result2.length > 0) {
+                    res.send(JSON.stringify('rut ocupado'));
+                    console.log("OK");
+                }
+                else {
+                    connection.query("INSERT INTO `usuario` SET rut=?, contrasena=md5(?), nombre=?, apellido=?, rol=2, direccion=?, region=?, comuna=?, correo=?", [nuevo.rut, nuevo.contrasena, nuevo.nombre, nuevo.apellido, nuevo.direccion, nuevo.region, nuevo.comuna, nuevo.correo], (req1, cita) => {
+                        res.status(201).send(JSON.stringify('usuario creado'));
+                    });
+                }
+            });
+        }
     });
 });
 routerPaciente.get('/all', (req, res) => {
