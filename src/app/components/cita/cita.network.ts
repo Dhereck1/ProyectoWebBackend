@@ -124,21 +124,37 @@ routerCita.put('/editarCita',(req:Request,res:Response)=>{
     let connection = server.conexionBD();
     let idCita=req.body.idCita;
     let idMedico=req.body.idMedico;
+    let idUsuario=req.body.idUsuario;
     let estado=req.body.estado;
     let fecha=req.body.fecha;
     let hora=req.body.hora;
+    let fechaActual=new Date();
     console.log(req.body)
     connection.query("UPDATE cita SET estado=? , fecha=? , hora=? , idMedico=? WHERE idCita=?",[estado,fecha,hora,idMedico,idCita],(req1:any, cita:any)=>{
-        res.status(200).send(JSON.stringify('cita actualizaa'));
+        res.status(200).send(JSON.stringify('cita actualizada'));
+        if(estado=="Cerrada"){
+            connection.query("INSERT INTO `canceladas` SET idUsuario=? , idCita=? , fecha=?",[idUsuario,idCita,fechaActual],(error:any,res2:any)=>{
+                if(error){
+                    throw(error);
+                }
+            })
+        }
     });
 });
 
 routerCita.put('/cancelarCita',(req:Request,res:Response)=>{
     let connection = server.conexionBD();
     let idCita=req.body.idCita;
+    let idUsuario=req.body.idUsuario;
     let estado=req.body.estado;
-    connection.query("UPDATE cita SET estado=? WHERE idCita=?",[estado,idCita],(req1:any, cita:any)=>{
+    let fechaActual=new Date();
+    connection.query("UPDATE cita SET estado=? WHERE idCita=?",[estado,idCita],(req1:any, cita:any)=>{   
         res.status(200).send(JSON.stringify('cita cancelada'));
+        connection.query("INSERT INTO `canceladas` SET idUsuario=? , idCita=? , fecha=?",[idUsuario,idCita,fechaActual],(error:any,res2:any)=>{
+            if(error){
+                throw(error);
+            }
+        })
     });
 });
 
