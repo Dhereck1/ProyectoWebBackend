@@ -1,0 +1,16 @@
+//Para usar el programa, viene adjunto en el main del repositorio una base de datos sql llamada "proyectobd.sql" la cual cuenta con 2 usuarios, uno de administrador y otro de paciente.
+
+La base de datos se conecta a una cuenta de la BD que tiene privilegios para realizar operaciones, esta cuenta esta en el server.ts del repositorio.
+
+La base de datos fue creada mediante php/apache usando el panel de control de XAMPP
+
+//Cuenta de administrador (para logearse en el front-end)
+Rut: 00000000-0
+Contraseña: 123
+//Cuenta de paciente (para front-end)
+Rut: 19776416-3
+Contraseña:123
+//La aplicacion cuenta con la posibilidad de registrarse, por lo cual tambien se podra crear una cuenta propia y luego realizar las operaiones descritas en los requerimientos
+
+
+Para ejecutar bakend: ejecutar index.js que esta en la carpeta dist
