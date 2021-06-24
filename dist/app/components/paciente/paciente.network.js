@@ -35,7 +35,7 @@ routerPaciente.get('/token', (req, res) => {
         res.json(token);
     });
 });
-routerPaciente.post('/registro', (req, res) => {
+routerPaciente.post('/registro', rutaSegura, (req, res) => {
     let connection = server_1.default.conexionBD();
     let nuevo = {
         idUsuario: null,

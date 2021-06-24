@@ -41,7 +41,7 @@ routerPaciente.get('/token',(req:any,res:any)=>{
 });
 
 
-routerPaciente.post('/registro' ,(req:any,res:any)=>{
+routerPaciente.post('/registro', rutaSegura ,(req:any,res:any)=>{
     let connection = server.conexionBD();
 
     let nuevo={
